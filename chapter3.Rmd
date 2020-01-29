@@ -1,0 +1,263 @@
+#8
+```{r}
+#a) We can see from the result that mpg is related to horsepower. And as the p-value of the coefficient of horsepower is significantly small, the relationship between mpg and horsepower is very strong. Also, the negative coefficient (-0.157845) indicates a negative relationship. 
+library(ISLR)
+lm.fit = lm(mpg~horsepower,data = Auto)
+summary(lm.fit)
+names(summary(lm.fit))
+summary(lm.fit)$r.squared
+summary(lm.fit)$adj.r.squared
+
+predict(lm.fit,data.frame(horsepower = 98),interval = "confidence")
+predict(lm.fit,data.frame(horsepower = 98),interval = "prediction")
+
+#b) The scatterplot shows that the real relationship between mpg and horsepower is not linear.
+plot(Auto$horsepower,Auto$mpg)+abline(lm.fit,col = "red")
+plot(lm.fit)
+```
+#9
+```{r}
+#a)
+par(mfrow = c(3,3))
+#plot(mpg~.,data = Auto)
+summary(Auto)
+#b)
+cor(Auto[,-9])
+cor(subset(Auto,select = -name))
+#c) dsiplacement, weight, year, and origin seems to have strong relationship with mpg. The coefficient for year indicates that if the number for year increases by 1, then the mpg will end up increasing 0.750773.
+#mpg is improved by car maker each year.
+lm.fit = lm(mpg~.-name,data = Auto)
+summary(lm.fit)
+#d) From the residual plot, we can find a non-linearility in the real relationship. Point 323 is a potential outlier, and 14 is a high leverage point. The r-studendized plot shows some dots have rstudendize value larger than 3, which are outliers.
+par(mfrow = c(2,2))
+plot(lm.fit)
+plot(predict(lm.fit),rstudent(lm.fit))
+#e) 
+lm.fit = lm(mpg~cylinders*year,data = Auto)
+summary(lm.fit)
+lm.fit = lm(mpg~cylinders:year,data = Auto)
+summary(lm.fit)
+#f)
+lm.fit = lm(mpg~horsepower+I(horsepower^2),data = Auto)
+summary(lm.fit)
+lm.fit = lm(mpg~horsepower+log(horsepower,base = 10),data = Auto)
+summary(lm.fit)
+lm.fit = lm(mpg~horsepower+sqrt(horsepower),data = Auto)
+summary(lm.fit)
+```
+#10
+```{r}
+#a)
+#View(Carseats)
+library(ISLR)
+summary(Carseats)
+lm.fit = lm(Sales~Price+Urban+US,data = Carseats)
+summary(lm.fit)
+#b) Urban and US are both qualitative terms and they are both dummy variable. From the summary we find out that the sales is not related to Urban but significantly related to US. Also, the price also effects sales.
+#c) Sales = 13.04 + -0.05 Price + -0.02 UrbanYes + 1.20 USYes
+#d) Only for Price and US can we reject the null hypothesis.
+#e)
+lm.fit = lm(Sales~Price+US,data = Carseats)
+summary(lm.fit)
+#f) The new mdoel has a larger adjusted R-square than the old one, also a larger F-statistic. In general, because the new model is smaller and has less predictors, it is a better version of the old one.
+#g)
+confint(lm.fit)
+#h) There seems no outlier but a high leverage point.
+par(mfrow = c(2,2))
+plot(predict(lm.fit),rstudent(lm.fit))
+#plot(lm.fit)
+```
+#11
+```{r}
+#a) The coefficient estimate is 1.9939, the standart error of the coefficient estimate is 0.1065, the F-statistic is 350.7, and the p-value is < 2.2e-16. We can reject the null hypothesis.
+set.seed(1)
+x = rnorm(100)
+y = 2*x+rnorm(100)
+lm.fit = lm(y~x+0)
+summary(lm.fit)
+#b)Now, the coefficient estimate is 0.39111, the standart error of the coefficient estimate is 0.02089, the F-statistic is 350.7, and the p-value is < 2.2e-16. The null hypothesis can still be rejected.
+lm.fit1 = lm(x~y+0)
+summary(lm.fit1)
+#c) Only the coefficient has changed.
+#d)
+#1==2
+#(9)
+prove = (sqrt(99)*sum(x*y))/sqrt(sum(x**2)*sum(y**2)-sum(x*y)**2)
+prove
+```
+#12
+```{r}
+#b)
+x = rnorm(100)
+y = x*8
+lm.fit = lm(y~x)
+#summary(lm.fit)
+coef(lm.fit)
+
+lm.fit1 = lm(x~y)
+coef(lm.fit1)
+#summary(lm.fit1)
+#c)
+x = rnorm(1000)
+y = x
+lm.fit = lm(y~x)
+coef(lm.fit)
+
+lm.fit1 = lm(x~y)
+coef(lm.fit1)
+```
+#13
+```{r}
+#a)
+set.seed(1)
+x = rnorm(100)
+#b)
+eps = rnorm(100,0,sqrt(0.25))
+#c) b0 = -1,b1 = 0.5
+y = -1+0.5*x+eps
+length(y)
+#d) It seems that y and x are positively related in a linear relationship.
+plot(x,y)
+#e) The estimated coefficients are almost the same of the real coefficients.
+lm.fit = lm(y~x)
+coef(lm.fit)
+#f) 
+abline(lm.fit,lwd = 2,col = 3)
+abline(-1,0.5,lwd = 2,col = 2)
+legend(-1,legend = c("model fit","pop.regression"),col = 2:3,lwd = 3)
+#g)
+qua.fit = lm(y~x+I(x^2))
+par(mfrow = c(2,2))
+plot(qua.fit)
+par(mfrow = c(2,2))
+plot(lm.fit)
+#h)
+eps = rnorm(100,0,0.01)
+y1 = -1+0.5*x+eps
+plot(x,y1)
+lm.fit1 = lm(y1~x)
+abline(lm.fit1)
+par(mfrow = c(2,2))
+plot(lm.fit1)
+#i）
+eps = rnorm(100,10)
+y2 = -1+0.5*x+eps
+plot(x,y2)
+lm.fit2 = lm(y2~x)
+abline(lm.fit2)
+par(mfrow = c(2,2))
+plot(lm.fit2)
+#j)
+confint(lm.fit)
+confint(lm.fit1)
+confint(lm.fit2)
+```
+#14
+```{r}
+#a) y = 2+x1*2+x2*0.3
+set.seed(1)
+x1 = runif(100)
+x2 = 0.5*x1+rnorm(100)/10
+y = 2+2*x1+0.3*x2+rnorm(100)
+#b) The correlation between x1 and x2 is 0.8351212.
+cor(x1,x2)
+#plot(x1,x2)
+#c) We can reject the null hypothesis that b1 = 0, but we cannot reject it for b2. Because the p-value for b1 is significantly small, but it is not the case for b2.
+lm.fit = lm(y~x1+x2)
+coef(lm.fit)
+summary(lm.fit)
+#d) We can reject the null hypothesis this time. 
+lm.fit1 = lm(y~x1)
+summary(lm.fit1)
+#e)We can reject.
+lm.fit2 = lm(y~x2)
+summary(lm.fit2)
+#f) The result is pretty reasonable. Without the effect of each other, x1 and x2 would be both significantly related to y; however, when both of them are considered, x2 is not as important as x1, thus it is not a useful factor if x2 is in the model.
+#g)
+x1 = c(x1,0.1)
+x2 = c(x2,0.8)
+y = c(y,6)
+lm.fit = lm(y~x1+x2)
+lm.fit1 = lm(y~x1)
+lm.fit2 = lm(y~x2)
+x1 = c(x1,0.1)
+x2 = c(x2,0.8)
+y = c(y,6)
+lm.fit = lm(y~x1+x2)
+summary(lm.fit)
+lm.fit1 = lm(y~x1)
+summary(lm.fit1)
+lm.fit2 = lm(y~x2)
+summary(lm.fit2)
+```
+#15
+```{r}
+#a) All qualitative predictors are significantly associated with the response.
+library(MASS)
+summary(Boston)
+sum(is.na(Boston))
+zn.fit = lm(crim~zn,data = Boston)
+summary(zn.fit)
+#plot(Boston)
+
+indus.fit = lm(crim~indus,data = Boston)
+summary(indus.fit)
+
+nox.fit = lm(crim~nox,data = Boston)
+summary(nox.fit)
+
+rm.fit = lm(crim~rm,data = Boston)
+summary(rm.fit)
+
+age.fit = lm(crim~age,data = Boston)
+summary(age.fit)
+
+dis.fit = lm(crim~dis,data = Boston)
+summary(dis.fit)
+
+rad.fit = lm(crim~rad,data = Boston)
+summary(zn.fit)
+
+tax.fit = lm(crim~tax,data = Boston)
+summary(tax.fit)
+
+ptratio.fit = lm(crim~ptratio,data = Boston)
+summary(ptratio.fit)
+
+black.fit = lm(crim~black,data = Boston)
+summary(black.fit)
+
+lstat.fit = lm(crim~lstat,data = Boston)
+summary(lstat.fit)
+
+medv.fit = lm(crim~medv,data = Boston)
+summary(medv.fit)
+
+chas.fit = lm(crim~chas,data = Boston)
+#b) We can reject null hypothesis for zn, dis, rad, black, medv.
+lm.full = lm(crim~.,data = Boston)
+summary(lm.full)
+#c)
+x = c(coef(zn.fit)[2],
+      coef(indus.fit)[2],
+      coef(chas.fit)[2],
+      coef(nox.fit)[2],
+      coef(rm.fit)[2],
+      coef(age.fit)[2],
+      coef(dis.fit)[2],
+      coef(rad.fit)[2],
+      coef(tax.fit)[2],
+      coef(ptratio.fit)[2],
+      coef(black.fit)[2],
+      coef(lstat.fit)[2],
+      coef(medv.fit)[2])
+y = coef(lm.full)[2:14]
+plot(x,y)
+#d)
+lm.zn = lm(crim~poly(zn,3),data = Boston)
+summary(lm.zn)
+```
+```{r}
+
+```
+
